@@ -1,36 +1,22 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm ';
 import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList';
 import { Container, Title, Contacts, EmptyList } from './Base.styled';
 
-const LS_KEY = 'contacts';
+export const App = () => {
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem('contacts'))
+  );
+  const [filter, setFilter] = useState('');
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-
-  componentDidMount() {
-    const savedContacts = JSON.parse(localStorage.getItem(LS_KEY));
-
-    if (savedContacts) {
-      this.setState({ contacts: savedContacts });
-    }
-  }
-
-  componentDidUpdate(_, { contacts: previousContacts }) {
-    const { contacts } = this.state;
-
-    if (previousContacts !== contacts) {
-      localStorage.setItem(LS_KEY, JSON.stringify(contacts));
-    }
-  }
-
-  addContact = ({ name, number }) => {
-    const { contacts } = this.state;
+  const addContact = ({ name, number }) => {
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    };
 
     if (
       contacts.find(
@@ -38,29 +24,14 @@ export class App extends Component {
       )
     ) {
       alert(`${name} is already in contacts.`);
-      return;
-    }
-
-    if (
-      contacts.find(
-        contact => contact.number.toLowerCase() === number.toLowerCase()
-      )
-    ) {
+    } else if (contacts.find(contact => contact.number === number)) {
       alert(`${number} is already in contacts.`);
-      return;
+    } else {
+      setContacts([contact, ...contacts]);
     }
-
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-
-    this.setState(({ contacts }) => ({ contacts: [contact, ...contacts] }));
   };
 
-  getVisibleContacts = () => {
-    const { contacts, filter } = this.state;
+  const getVisibleContacts = () => {
     const normalizedFilter = filter.toLowerCase();
 
     return contacts.filter(contact =>
@@ -68,44 +39,44 @@ export class App extends Component {
     );
   };
 
-  deleteContact = id => {
-    this.setState(({ contacts }) => ({
-      contacts: contacts.filter(contact => contact.id !== id),
-    }));
+  const deleteContact = id => {
+    const nemContactsList = contacts.filter(contact => contact.id !== id);
+    setContacts([...nemContactsList]);
   };
 
-  onFilterChange = event => {
-    this.setState({ filter: event.currentTarget.value });
+  const onFilterChange = event => {
+    setFilter(event.currentTarget.value);
   };
 
-  render() {
-    const { filter } = this.state;
-    const visibleContacts = this.getVisibleContacts();
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-    return (
-      <Container>
-        <Title>
-          <h1>Phonebook</h1>
-        </Title>
-        <ContactForm onSubmit={this.addContact} />
-        <Contacts>
-          <h2>Contacts</h2>
-        </Contacts>
+  const visibleContacts = getVisibleContacts();
 
-        {this.state.contacts.length ? (
-          <>
-            <Filter value={filter} onChange={this.onFilterChange} />
-            <ContactList
-              contacts={visibleContacts}
-              deleteContact={this.deleteContact}
-            />
-          </>
-        ) : (
-          <EmptyList>
-            <p>Сontact list is empty😢</p>
-          </EmptyList>
-        )}
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <Title>
+        <h1>Phonebook</h1>
+      </Title>
+      <ContactForm onSubmit={addContact} />
+      <Contacts>
+        <h2>Contacts</h2>
+      </Contacts>
+
+      {this.state.contacts.length ? (
+        <>
+          <Filter value={filter} onChange={onFilterChange} />
+          <ContactList
+            contacts={visibleContacts}
+            deleteContact={deleteContact}
+          />
+        </>
+      ) : (
+        <EmptyList>
+          <p>Сontact list is empty😢</p>
+        </EmptyList>
+      )}
+    </Container>
+  );
+};
