@@ -64,7 +64,7 @@ export const App = () => {
         <h2>Contacts</h2>
       </Contacts>
 
-      {this.state.contacts.length ? (
+      {contacts.length ? (
         <>
           <Filter value={filter} onChange={onFilterChange} />
           <ContactList
