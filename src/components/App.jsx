@@ -6,9 +6,9 @@ import ContactList from './ContactList/ContactList';
 import { Container, Title, Contacts, EmptyList } from './Base.styled';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(
-    JSON.parse(localStorage.getItem('contacts'))
-  );
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+  });
   const [filter, setFilter] = useState('');
 
   const addContact = ({ name, number }) => {
@@ -56,13 +56,9 @@ export const App = () => {
 
   return (
     <Container>
-      <Title>
-        <h1>Phonebook</h1>
-      </Title>
+      <Title>Phonebook</Title>
       <ContactForm onSubmit={addContact} />
-      <Contacts>
-        <h2>Contacts</h2>
-      </Contacts>
+      <Contacts>Contacts</Contacts>
 
       {contacts.length ? (
         <>
@@ -73,9 +69,7 @@ export const App = () => {
           />
         </>
       ) : (
-        <EmptyList>
-          <p>Сontact list is empty😢</p>
-        </EmptyList>
+        <EmptyList>Сontact list is empty😢</EmptyList>
       )}
     </Container>
   );

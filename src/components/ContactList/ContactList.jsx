@@ -12,9 +12,7 @@ export default function ContactList({ contacts, deleteContact }) {
       {contacts.map(({ id, name, number }) => (
         <ContactEl key={id}>
           <User>
-            <p>
-              {name}: {number}
-            </p>
+            {name}: {number}
           </User>
           <ButtonDelete type="button" onClick={() => deleteContact(id)}>
             Delete
