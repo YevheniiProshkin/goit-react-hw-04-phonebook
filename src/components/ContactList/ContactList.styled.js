@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const User = styled.p`
-  display: flex;
   font-weight: 500;
 `;
 
@@ -12,8 +11,9 @@ export const NewContactsList = styled.ul`
 
 export const ContactEl = styled.li`
   display: flex;
-  font-size: 20px;
   justify-content: space-between;
+  align-items: center;
+  align-items: center;
 `;
 
 export const ButtonDelete = styled.button`
